@@ -74,7 +74,7 @@ export default {
     const buttonClasses = (index) => {
       return [
         'btn',
-        lastCopiedIndex.value === index ? 'btn-info' : 'btn-copy'
+        lastCopiedIndex.value === index ? 'btn-pressed' : 'btn-copy'
       ];
     };
 
@@ -120,5 +120,13 @@ export default {
 .btn-remove:hover {
   background-color: #da637c;
   color: #fff;
+}
+
+.btn-pressed {
+  background-color: #4fb3c7;
+}
+
+.btn-pressed:hover {
+  background-color: #69adbb;
 }
 </style>
