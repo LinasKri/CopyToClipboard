@@ -1,36 +1,51 @@
 <template>
   <div class="container my-4">
-    <div v-for="(input, index) in inputs" :key="index" class="input-group mb-3">
-      <button v-if="input.isCopyButtonLeft" :class="buttonClasses(index)" type="button"
+    <div v-for="(input, index) in inputs" :key="index" class="input-group mb-4">
+      <button v-if="input.isCopyButtonLeft" class="rounded-2 me-1 fw-semibold" :class="buttonClasses(index)" type="button"
         @click="copyToClipboard(input.text, index)">
         Copy
       </button>
 
-      <textarea class="form-control" v-model="input.text"></textarea>
+      <textarea class="form-control rounded-2" v-model="input.text"></textarea>
+      <div>
 
-      <button v-if="!input.isCopyButtonLeft" :class="buttonClasses(index)" type="button"
+      </div>
+      <button v-if="!input.isCopyButtonLeft" class="rounded-2 ms-1" :class="buttonClasses(index)" type="button"
         @click="copyToClipboard(input.text, index)">
         Copy
       </button>
 
-      <div :class="{ 'order-first': !input.isCopyButtonLeft }">
-        <button class="btn btn-danger" type="button" @click="removeInput(index)">Remove</button>
-        <button class="btn btn-secondary" type="button" @click="toggleButtonPosition(index)">
+      <div class="d-flex flex-column mx-1" :class="{ 'order-first': !input.isCopyButtonLeft }">
+        <button class="btn btn-remove mb-1" type="button" @click="removeInput(index)">Remove</button>
+        <button class="btn btn-move" type="button" @click="toggleButtonPosition(index)">
           {{ input.isCopyButtonLeft ? 'Move Right' : 'Move Left' }}
         </button>
       </div>
     </div>
-    <button class="btn btn-primary" @click="addInput">Add Input</button>
+    <button class="btn btn-add" @click="addInput">Add Input</button>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 
 export default {
+
   setup() {
     const inputs = ref([{ text: '', isCopyButtonLeft: true }]);
     const lastCopiedIndex = ref(-1);
+
+    onMounted(() => {
+      const savedInputs = localStorage.getItem('inputs');
+      if (savedInputs) {
+        inputs.value = JSON.parse(savedInputs);
+      }
+    });
+
+    // Save to local storage whenever inputs change
+    watch(inputs, (newInputs) => {
+      localStorage.setItem('inputs', JSON.stringify(newInputs));
+    }, { deep: true });
 
     const addInput = () => {
       inputs.value.push({ text: '', isCopyButtonLeft: true });
@@ -59,7 +74,7 @@ export default {
     const buttonClasses = (index) => {
       return [
         'btn',
-        lastCopiedIndex.value === index ? 'btn-info' : 'btn-warning'
+        lastCopiedIndex.value === index ? 'btn-info' : 'btn-copy'
       ];
     };
 
@@ -69,7 +84,41 @@ export default {
 </script>
 
 <style>
-* {
-  background-color: rgb(28, 113, 85);
+.btn-copy {
+  background-color: #fec84d;
+}
+
+.btn-copy:hover {
+  background-color: #f4d180;
+}
+
+.btn-add {
+  background-color: #004369;
+  color: #fff;
+}
+
+.btn-add:hover {
+  background-color: #36596e;
+  color: #fff;
+}
+
+.btn-move {
+  background-color: #01948a;
+  color: #fff;
+}
+
+.btn-move:hover {
+  background-color: #619592;
+  color: #fff;
+}
+
+.btn-remove {
+  background-color: #db1f48;
+  color: #fff;
+}
+
+.btn-remove:hover {
+  background-color: #da637c;
+  color: #fff;
 }
 </style>
